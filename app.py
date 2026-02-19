@@ -117,13 +117,18 @@ with col2:
 # HISTÓRICO
 # =========================
 
+from langchain_core.messages import HumanMessage, AIMessage
+
 for msg in st.session_state.historico.messages:
-    if msg.type == "human":
-        with st.chat_message("user", avatar="assets/user_1.png"):
-            st.markdown(msg.content)
+    if isinstance(msg, HumanMessage):
+        role = "user"
+        avatar = "assets/user_1.png"
     else:
-        with st.chat_message("assistant", avatar="assets/user_3.png"):
-            st.markdown(msg.content)
+        role = "assistant"
+        avatar = "assets/user_3.png"
+
+    with st.chat_message(role, avatar=avatar):
+        st.markdown(msg.content)
 
 # =========================
 # INPUT
@@ -153,11 +158,6 @@ if pergunta:
             ):
                 resposta_final += chunk.content
                 resposta_container.markdown(resposta_final)
-
-            # SALVAR HISTÓRICO APENAS UMA VEZ
-            st.session_state.historico.add_user_message(pergunta)
-            st.session_state.historico.add_ai_message(resposta_final)
-
 
         except Exception:
             st.error("⚠️ Erro ao gerar resposta. Tente novamente.")
